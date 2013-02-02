@@ -6,14 +6,24 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import hydrangea.bixifinder.StationsListFragment.OnStationSelectedListener;
 import hydrangea.bixifinder.models.Station;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.ConnectionResult;
 
 public class MainActivity extends FragmentActivity implements
 		OnStationSelectedListener {
-
+	int SHOW_ERROR = 0;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (result == com.google.android.gms.common.ConnectionResult.SUCCESS) {
+			//apk is up to date and we can proceed as normal.
+		} else {
+			GooglePlayServicesUtil.getErrorDialog(result, this, SHOW_ERROR);
+		}
 
 		// If fragment_container exists, then we're on a phone
 		if (findViewById(R.id.fragment_container) != null) {

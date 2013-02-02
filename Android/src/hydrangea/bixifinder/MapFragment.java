@@ -21,6 +21,13 @@ public class MapFragment extends Fragment {
 		mStation = station;
 	}
 	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.map_fragment_stuffer, container);
+		return view;
+	}
+	
 	public void updateDetails() {
 		// Do something here Will
 	}
