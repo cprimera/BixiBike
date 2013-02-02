@@ -17,6 +17,10 @@ public class MapFragment extends Fragment {
 
 	private Station mStation;
 	
+	public MapFragment() {
+		//req'd empty constructor
+	}
+	
 	public MapFragment(Station station) {
 		mStation = station;
 	}

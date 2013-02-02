@@ -2,6 +2,7 @@ package hydrangea.bixifinder;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import hydrangea.bixifinder.models.Station;
@@ -18,11 +20,12 @@ public class StationsListFragment extends ListFragment {
 
 	ArrayList<Station> mStations;
 	StationAdapter mAdapter;
+	OnStationSelectedListener mCallback;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstacneState) {
-
+		
 		View view = inflater.inflate(R.layout.list_fragment_stations,
 				container, false);
 
@@ -34,6 +37,24 @@ public class StationsListFragment extends ListFragment {
 		this.setListAdapter(mAdapter);
 		
 		return view;
+	}
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		
+		try {
+			mCallback = (OnStationSelectedListener) activity;
+			
+		} catch (Exception e) {
+			
+		}
+	}
+	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		mCallback.onStationSelected(mStations.get(position));
 	}
 
 	private ArrayList<Station> getStations() {
