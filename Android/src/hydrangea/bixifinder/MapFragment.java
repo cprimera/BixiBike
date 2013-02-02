@@ -1,5 +1,7 @@
 package hydrangea.bixifinder;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.*;
@@ -11,11 +13,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import hydrangea.bixifinder.MainActivity.OnStationsFetchedListener;
 import hydrangea.bixifinder.models.Station;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements OnStationsFetchedListener{
 
 	private Station mStation;
+	private ArrayList<Station> mStations;
 	
 	public MapFragment() {
 		//req'd empty constructor
@@ -38,5 +42,10 @@ public class MapFragment extends Fragment {
 	
 	public void setStation(Station station) {
 		mStation = station;
+	}
+
+	@Override
+	public void onStationsFetched() {
+		
 	}
 }

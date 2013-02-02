@@ -8,11 +8,15 @@ public class Station {
 	private int mId;
 	private boolean mInstalled;
 	private boolean mLocked;
+	private double mLat;
+	private double mLong;
 	
-	public Station(String name, int bikes, int docks) {
+	public Station(String name, int bikes, int docks, double lat, double lng) {
 		this.mStationName = name;
 		this.mBikes = bikes;
 		this.mDocks = docks;
+		this.mLat = lat;
+		this.mLong = lng;
 	}
 
 	public String getStationName() {
