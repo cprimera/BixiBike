@@ -76,7 +76,8 @@ public class MapFragment extends Fragment implements OnStationsFetchedListener {
 	}
 
 	public void updateDetails() {
-		// Do something here Will
+		LatLng pos = new LatLng(mStation.getLat(), mStation.getLng());
+		map.animateCamera(CameraUpdateFactory.newLatLng(pos), 1000, null);
 	}
 
 	public void setStation(Station station) {
@@ -90,8 +91,11 @@ public class MapFragment extends Fragment implements OnStationsFetchedListener {
 		for (Station s : mStations) {
 			LatLng pos = new LatLng(s.getLat(), s.getLng());
 
-			Marker stationMarker = map.addMarker(new MarkerOptions().position(
-					pos).title(s.getStationName()));
+			Marker stationMarker = map.addMarker(new MarkerOptions().
+					position(pos).
+					title(s.getStationName()).
+					snippet("Free Bikes: " + s.getBikes() + "\t Free Docks: " + s.getDocks())
+					);
 
 		}
 	}
