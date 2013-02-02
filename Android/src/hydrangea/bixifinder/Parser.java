@@ -1,5 +1,7 @@
 package hydrangea.bixifinder;
 
+import hydrangea.bixifinder.models.Station;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import android.util.Xml;
 public class Parser {
 	private static final String namespace = null;
 
-	public ArrayList<StationEntry> parse(InputStream in) throws XmlPullParserException, IOException {
+	public ArrayList<Station> parse(InputStream in) throws XmlPullParserException, IOException {
 		try {
 			XmlPullParser p = Xml.newPullParser();
 			p.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -24,8 +26,8 @@ public class Parser {
 		}
 	}
 
-	private ArrayList<StationEntry> readFeed(XmlPullParser p) throws XmlPullParserException, IOException {
-		ArrayList<StationEntry> entries = new ArrayList<StationEntry>();
+	private ArrayList<Station> readFeed(XmlPullParser p) throws XmlPullParserException, IOException {
+		ArrayList<Station> entries = new ArrayList<Station>();
 		p.require(XmlPullParser.START_TAG, namespace, "feed");
 		while (p.next() != XmlPullParser.END_TAG) {
 			if (p.getEventType() != XmlPullParser.START_TAG) {
@@ -44,7 +46,7 @@ public class Parser {
 		
 	}
 	
-	private StationEntry readStationEntry(XmlPullParser p)
+	private Station readStationEntry(XmlPullParser p)
 			throws XmlPullParserException, IOException {
 		p.require(XmlPullParser.START_TAG, null, "station");
 		String name = null;
@@ -71,7 +73,7 @@ public class Parser {
 				skip(p);
 			}
 		}
-		return new StationEntry(name, latitude, longitude, numBikes, numEmpty);
+		return new Station(name, Integer.parseInt(numBikes), Integer.parseInt(numEmpty), Double.parseDouble(latitude), Double.parseDouble(longitude));
 	}
 
 	private String readStuff(XmlPullParser p, String tag) throws XmlPullParserException, IOException {
@@ -106,24 +108,5 @@ public class Parser {
 	        }
 	    }
 	 }
-	
-	public static class StationEntry {
-		public final String name;
-		public final String latitude;
-		public final String longitude;
-		public final String numBikes;
-		public final String numSpots;
-
-		private StationEntry(String name, String latitude, String longitude,
-				String numBikes, String numSpots) {
-			this.name = name;
-			this.latitude = latitude;
-			this.longitude = longitude;
-			this.numBikes = numBikes;
-			this.numSpots = numSpots;
-		}
-
-		
-	}
 	
 }
