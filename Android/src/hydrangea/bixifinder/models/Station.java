@@ -34,4 +34,12 @@ public class Station {
 	public boolean getInstalled() {
 		return mInstalled;
 	}
+	
+	public double getLat() {
+		return mLat;
+	}
+	
+	public double getLng() {
+		return mLong;
+	}
 }
