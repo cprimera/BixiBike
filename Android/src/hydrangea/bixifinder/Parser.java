@@ -3,7 +3,7 @@ package hydrangea.bixifinder;
 import hydrangea.bixifinder.models.Station;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -14,15 +14,15 @@ import android.util.Xml;
 public class Parser {
 	private static final String namespace = null;
 
-	public ArrayList<Station> parse(InputStream in) throws XmlPullParserException, IOException {
+	public ArrayList<Station> parse(String xml) throws XmlPullParserException, IOException {
 		try {
 			XmlPullParser p = Xml.newPullParser();
 			p.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-			p.setInput(in, null);
+			p.setInput(new StringReader(xml));
 			p.nextTag();
 			return readFeed(p);
 		} finally {
-			in.close();
+			//
 		}
 	}
 
