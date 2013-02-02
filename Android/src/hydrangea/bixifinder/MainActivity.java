@@ -12,6 +12,7 @@ import com.google.android.gms.common.ConnectionResult;
 public class MainActivity extends FragmentActivity implements
 		OnStationSelectedListener {
 	int SHOW_ERROR = 0;
+	final private String BIXI = "Bixi";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class MainActivity extends FragmentActivity implements
 
 		// Create the map fragment
 
-		MapFragment mapFragment = null;
+		MapFragment mapFragment = new MapFragment(station);
 
 		// If mapFragment is not null, we're on a tablet
 		// else we're on a phone
