@@ -1,6 +1,7 @@
 package hydrangea.bixifinder;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -64,6 +65,8 @@ public class MainActivity extends FragmentActivity implements
 
 		MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map_fragment);
+		
+		Log.d("MYTAG", "Done loading fragment");
 
 		// If mapFragment is not null, we're on a tablet
 		// else we're on a phone
