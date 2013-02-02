@@ -49,7 +49,7 @@ public class DataConnector {
 		}
 	}
 
-	private String downloadUrl(String myurl) throws IOException {
+	private InputStream downloadUrl(String myurl) throws IOException {
 		InputStream is = null;
 		// Only display the first 500 characters of the retrieved
 		// web page content.
@@ -67,18 +67,18 @@ public class DataConnector {
 			int response = conn.getResponseCode();
 			Log.d("DEBUG_TAG", "The response is: " + response);
 			is = conn.getInputStream();
-			
-			String str = readIt(is, len);
-			
-			Log.d("HUGE ASS STRING", str);
-
-			return str;
+			return is;
+//			String str = readIt(is, len);
+//			
+//			Log.d("HUGE ASS STRING", str);
+//
+//			return str;
 
 			// Makes sure that the InputStream is closed after the app is
 			// finished using it.
 		} finally {
 			if (is != null) {
-				is.close();
+				//is.close();
 			}
 		}
 	}
