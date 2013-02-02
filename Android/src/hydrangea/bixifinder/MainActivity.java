@@ -1,5 +1,6 @@
 package hydrangea.bixifinder;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,11 +19,15 @@ public class MainActivity extends FragmentActivity implements
 
 	OnStationsFetchedListener mCallback;
 	OnStationsFetchedListener mListCallback;
+	
+	private Activity mActivity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		mActivity = (Activity) this;
 
 		int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 
@@ -118,7 +123,7 @@ public class MainActivity extends FragmentActivity implements
 
 			try {
 				DataConnector dc = DataConnector.getInstance();
-				dc.downloadStations();
+				dc.downloadStations(mActivity);
 
 			} catch (Exception e) {
 				e.printStackTrace();
