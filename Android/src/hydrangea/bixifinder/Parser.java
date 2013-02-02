@@ -33,7 +33,7 @@ public class Parser {
 
 	private ArrayList<Station> readFeed(XmlPullParser p) throws XmlPullParserException, IOException {
 		ArrayList<Station> entries = new ArrayList<Station>();
-		p.require(XmlPullParser.START_TAG, namespace, "feed");
+		p.require(XmlPullParser.START_TAG, namespace, p.getName());
 		while (p.next() != XmlPullParser.END_TAG) {
 			if (p.getEventType() != XmlPullParser.START_TAG) {
 				continue;
