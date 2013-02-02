@@ -36,7 +36,7 @@
         android:layout_marginTop="10dp"
         android:text="Name"
         android:textSize="15dp"
-        android:textStyle="normal"
+        android:textStyle="normal|bold"
         android:typeface="serif" />
 
 </RelativeLayout>
