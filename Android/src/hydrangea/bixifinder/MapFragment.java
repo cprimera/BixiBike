@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.*;
 import android.location.Location;
 import android.location.LocationManager;
@@ -80,8 +81,7 @@ public class MapFragment extends Fragment implements OnStationsFetchedListener, 
 	    
 	    mUserMarker = map.addMarker(new MarkerOptions().
 				position(pos).
-				title("You're Here").
-                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+				title("You're Here")
                 );
 	    
 	    
@@ -109,11 +109,14 @@ public class MapFragment extends Fragment implements OnStationsFetchedListener, 
 		mMarkers = new ArrayList<Marker>();
 		for (Station s : mStations) {
 			LatLng pos = new LatLng(s.getLat(), s.getLng());
+			
+//			Drawable myIcon = getResources().getDrawable( R.drawable.cycling );
 
 			Marker stationMarker = map.addMarker(new MarkerOptions().
 					position(pos).
 					title(s.getStationName()).
-					snippet("Free Bikes: " + s.getBikes() + "\t Free Docks: " + s.getDocks())
+					snippet("Free Bikes: " + s.getBikes() + "\t Free Docks: " + s.getDocks()).
+					icon(BitmapDescriptorFactory.fromResource(R.drawable.cycling))
 					);
 			
 			mMarkers.add(stationMarker);
