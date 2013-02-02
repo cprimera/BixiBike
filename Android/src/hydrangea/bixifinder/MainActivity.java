@@ -63,7 +63,7 @@ public class MainActivity extends FragmentActivity implements
 		// Create the map fragment
 
 		MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.detail_fragment);
+				.findFragmentById(R.id.map_fragment);
 
 		// If mapFragment is not null, we're on a tablet
 		// else we're on a phone
