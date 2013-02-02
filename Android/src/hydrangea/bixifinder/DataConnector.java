@@ -9,7 +9,7 @@ public class DataConnector {
 	private static DataConnector sInstance;
 
 	// Actual Data
-	ArrayList<Station> mStations = null;
+	ArrayList<Station> mStations = new ArrayList<Station>();
 	
 	public static synchronized DataConnector getInstance() {
 		if(sInstance == null){
@@ -28,5 +28,10 @@ public class DataConnector {
 
 	public void downloadStations() {
 		
+		
+		for(int i = 0; i < 10; i++) {
+			Station s = new Station("Station " + i, i, 10-i, i, i);
+			mStations.add(s);
+		}
 	}
 }

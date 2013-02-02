@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +15,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import hydrangea.bixifinder.MainActivity.OnStationsFetchedListener;
 import hydrangea.bixifinder.models.Station;
 
-public class StationsListFragment extends ListFragment {
+public class StationsListFragment extends ListFragment implements
+		OnStationsFetchedListener {
 
 	ArrayList<Station> mStations;
 	StationAdapter mAdapter;
@@ -25,50 +28,40 @@ public class StationsListFragment extends ListFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstacneState) {
-		
+
 		View view = inflater.inflate(R.layout.list_fragment_stations,
 				container, false);
 
-		mStations = getStations();
-		
+		DataConnector dc = DataConnector.getInstance();
+		mStations = dc.getStations();
+
 		// Create Array adapter with mStations
-		mAdapter = new StationAdapter(getActivity(), R.layout.list_item_station, mStations);
-		
+		mAdapter = new StationAdapter(getActivity(),
+				R.layout.list_item_station, mStations);
+
 		this.setListAdapter(mAdapter);
-		
+
 		return view;
 	}
-	
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		
+
 		try {
 			mCallback = (OnStationSelectedListener) activity;
-			
+
 		} catch (Exception e) {
-			
+
 		}
 	}
-	
+
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		mCallback.onStationSelected(mStations.get(position));
 	}
 
-	private ArrayList<Station> getStations() {
-		ArrayList<Station> list = new ArrayList<Station>();
-		
-		for(int i = 0; i < 10; i++) {
-			Station s = new Station("Station " + i, i, 10-i, i, i);
-			list.add(s);
-		}
-		
-		return list;
-	}
-
-	
 	// Creates an adapter for the Station List
 	private class StationAdapter extends ArrayAdapter<Station> {
 
@@ -76,7 +69,8 @@ public class StationsListFragment extends ListFragment {
 		private Context mContext;
 		int mTextViewResource;
 
-		public StationAdapter(Context context, int textViewResource, ArrayList<Station> items) {
+		public StationAdapter(Context context, int textViewResource,
+				ArrayList<Station> items) {
 			super(context, textViewResource, items);
 
 			this.mItems = items;
@@ -95,18 +89,31 @@ public class StationsListFragment extends ListFragment {
 				view = inflater.inflate(mTextViewResource, null);
 			}
 
-			Station station  = mItems.get(position);
-			((TextView) view.findViewById(R.id.stationName)).setText(station.getStationName());
+			Station station = mItems.get(position);
+			((TextView) view.findViewById(R.id.stationName)).setText(station
+					.getStationName());
 
 			// Get the necessary views from the layout, that we want to change
 
 			return view;
 		}
 
+		public void updateStationsList(ArrayList<Station> list) {
+			this.mItems = list;
+			Log.d("TAG ITEMS", Integer.toString(mItems.size()));
+		}
+
 	}
-	
-	
+
 	public interface OnStationSelectedListener {
 		public void onStationSelected(Station station);
+	}
+
+	@Override
+	public void onStationsFetched() {
+		DataConnector dc = DataConnector.getInstance();
+		mStations = dc.getStations();
+		mAdapter.updateStationsList(mStations);
+		mAdapter.notifyDataSetChanged();
 	}
 }

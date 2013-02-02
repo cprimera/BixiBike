@@ -15,18 +15,19 @@ public class MainActivity extends FragmentActivity implements
 		OnStationSelectedListener {
 	int SHOW_ERROR = 0;
 	final private String BIXI = "Bixi";
-	
+
 	OnStationsFetchedListener mCallback;
-	
+	OnStationsFetchedListener mListCallback;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-		
+
 		if (result == com.google.android.gms.common.ConnectionResult.SUCCESS) {
-			//apk is up to date and we can proceed as normal.
+			// apk is up to date and we can proceed as normal.
 		} else {
 			GooglePlayServicesUtil.getErrorDialog(result, this, SHOW_ERROR);
 		}
@@ -40,6 +41,7 @@ public class MainActivity extends FragmentActivity implements
 			}
 
 			StationsListFragment listFragment = new StationsListFragment();
+			mListCallback = (OnStationsFetchedListener) listFragment;
 
 			// Pass on extras from the intent that
 			// started the activity to the fragment
@@ -49,9 +51,20 @@ public class MainActivity extends FragmentActivity implements
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.fragment_container, listFragment).commit();
 
+		} else {
+
+			StationsListFragment listFragment = (StationsListFragment) getSupportFragmentManager()
+					.findFragmentById(R.id.list_fragment);
+			mListCallback = (OnStationsFetchedListener) listFragment;
+
+			MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
+					.findFragmentById(R.id.map_fragment);
+			mCallback = (OnStationsFetchedListener) mapFragment;
+
 		}
-		
+
 		// Start loading the data in the background
+		new GetStationsTask().execute();
 	}
 
 	@Override
@@ -71,7 +84,7 @@ public class MainActivity extends FragmentActivity implements
 
 		MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map_fragment);
-		
+
 		Log.d("MYTAG", "Done loading fragment");
 
 		// If mapFragment is not null, we're on a tablet
@@ -89,7 +102,7 @@ public class MainActivity extends FragmentActivity implements
 
 			FragmentTransaction transaction = getSupportFragmentManager()
 					.beginTransaction();
-			
+
 			transaction.replace(R.id.fragment_container, newFragment);
 			transaction.addToBackStack(null);
 
@@ -97,7 +110,7 @@ public class MainActivity extends FragmentActivity implements
 		}
 
 	}
-	
+
 	class GetStationsTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
@@ -106,7 +119,7 @@ public class MainActivity extends FragmentActivity implements
 			try {
 				DataConnector dc = DataConnector.getInstance();
 				dc.downloadStations();
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -116,7 +129,8 @@ public class MainActivity extends FragmentActivity implements
 
 		@Override
 		protected void onPostExecute(final Void result) {
-			
+			if(mCallback != null) mCallback.onStationsFetched();
+			mListCallback.onStationsFetched();
 		}
 
 	}
@@ -124,5 +138,5 @@ public class MainActivity extends FragmentActivity implements
 	public interface OnStationsFetchedListener {
 		public void onStationsFetched();
 	}
-	
+
 }
