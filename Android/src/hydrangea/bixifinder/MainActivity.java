@@ -1,16 +1,15 @@
 package hydrangea.bixifinder;
 
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.Menu;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import hydrangea.bixifinder.StationsListFragment.OnStationSelectedListener;
 import hydrangea.bixifinder.models.Station;
 
+public class MainActivity extends FragmentActivity implements
+		OnStationSelectedListener {
 
-public class MainActivity extends FragmentActivity implements OnStationSelectedListener{
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,19 +50,18 @@ public class MainActivity extends FragmentActivity implements OnStationSelectedL
 	public void onStationSelected(Station station) {
 
 		// Create the map fragment
-		
+
 		MapFragment mapFragment = null;
 
 		// If mapFragment is not null, we're on a tablet
 		// else we're on a phone
 		if (mapFragment != null) {
-			
 			// Update the information displayed
 			mapFragment.setStation(station);
 			mapFragment.updateDetails();
-			
+
 		} else {
-			
+
 			MapFragment newFragment = new MapFragment(station);
 
 			FragmentTransaction transaction = getSupportFragmentManager()
