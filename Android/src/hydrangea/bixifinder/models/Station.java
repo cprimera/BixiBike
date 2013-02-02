@@ -8,6 +8,12 @@ public class Station {
 	private int mId;
 	private boolean mInstalled;
 	private boolean mLocked;
+	
+	public Station(String name, int bikes, int docks) {
+		this.mStationName = name;
+		this.mBikes = bikes;
+		this.mDocks = docks;
+	}
 
 	public String getStationName() {
 		return mStationName;
