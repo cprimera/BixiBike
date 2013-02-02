@@ -31,8 +31,8 @@ public class StationsListFragment extends ListFragment {
 		// Create Array adapter with mStations
 		mAdapter = new StationAdapter(getActivity(), R.layout.list_item_station, mStations);
 		
+		this.setListAdapter(mAdapter);
 		
-
 		return view;
 	}
 
