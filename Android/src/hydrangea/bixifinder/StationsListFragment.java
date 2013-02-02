@@ -46,4 +46,9 @@ public class StationsListFragment extends ListFragment {
 
 	
 	// Array Adapter here
+	
+	
+	public interface OnStationSelectedListener {
+		public void onStationSelected(Station station);
+	}
 }
