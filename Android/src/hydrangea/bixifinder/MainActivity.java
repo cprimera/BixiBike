@@ -5,10 +5,11 @@ import android.app.Activity;
 import android.view.Menu;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import hydrangea.bixifinder.StationsListFragment.OnStationSelectedListener;
 import hydrangea.bixifinder.models.Station;
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements OnStationSelectedListener{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +48,11 @@ public class MainActivity extends FragmentActivity {
 	 * Callback function for when a list item is clicked
 	 */
 	@Override
-	public void onLockSelected(Station station) {
+	public void onStationSelected(Station station) {
 
 		// Create the map fragment
 		
-		MapFragment mapFragment;
+		MapFragment mapFragment = null;
 
 		// If mapFragment is not null, we're on a tablet
 		// else we're on a phone
