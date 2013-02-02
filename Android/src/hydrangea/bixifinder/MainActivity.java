@@ -78,7 +78,7 @@ public class MainActivity extends FragmentActivity implements
 	 * Callback function for when a list item is clicked
 	 */
 	@Override
-	public void onStationSelected(Station station) {
+	public void onStationSelected(int station) {
 
 		// Create the map fragment
 
@@ -97,7 +97,7 @@ public class MainActivity extends FragmentActivity implements
 
 		} else {
 
-			MapFragment newFragment = new MapFragment(station);
+			MapFragment newFragment = new MapFragment();
 			mCallback = (OnStationsFetchedListener) mapFragment;
 
 			FragmentTransaction transaction = getSupportFragmentManager()

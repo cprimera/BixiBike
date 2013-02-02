@@ -59,7 +59,7 @@ public class StationsListFragment extends ListFragment implements
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		mCallback.onStationSelected(mStations.get(position));
+		mCallback.onStationSelected(position);
 	}
 
 	// Creates an adapter for the Station List
@@ -106,7 +106,7 @@ public class StationsListFragment extends ListFragment implements
 	}
 
 	public interface OnStationSelectedListener {
-		public void onStationSelected(Station station);
+		public void onStationSelected(int station);
 	}
 
 	@Override

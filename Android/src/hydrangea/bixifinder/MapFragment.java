@@ -19,17 +19,22 @@ import hydrangea.bixifinder.MainActivity.OnStationsFetchedListener;
 import hydrangea.bixifinder.models.Station;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 
-public class MapFragment extends Fragment implements OnStationsFetchedListener {
+public class MapFragment extends Fragment implements OnStationsFetchedListener, OnMarkerClickListener {
 
+	private int mSelected;
 	private Station mStation;
 	private ArrayList<Station> mStations;
+	private ArrayList<Marker> mMarkers;
 	private GoogleMap map;
+	
+	private Marker mUserMarker;
 
 	public MapFragment() {
 		// req'd empty constructor
@@ -72,22 +77,36 @@ public class MapFragment extends Fragment implements OnStationsFetchedListener {
 	    // Zoom in, animating the camera.
 	    map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
+	    
+	    mUserMarker = map.addMarker(new MarkerOptions().
+				position(pos).
+				title("You're Here").
+                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                );
+	    
+	    
+	    // Add listeners for markers
+	    map.setOnMarkerClickListener(this);
+	    
 		return view;
 	}
 
 	public void updateDetails() {
 		LatLng pos = new LatLng(mStation.getLat(), mStation.getLng());
 		map.animateCamera(CameraUpdateFactory.newLatLng(pos), 1000, null);
+		mMarkers.get(mSelected).showInfoWindow();
 	}
 
-	public void setStation(Station station) {
-		mStation = station;
+	public void setStation(int station) {
+		mSelected = station;
+		mStation = mStations.get(station);
 	}
 
 	@Override
 	public void onStationsFetched() {
 		DataConnector dc = DataConnector.getInstance();
 		mStations = dc.getStations();
+		mMarkers = new ArrayList<Marker>();
 		for (Station s : mStations) {
 			LatLng pos = new LatLng(s.getLat(), s.getLng());
 
@@ -96,7 +115,15 @@ public class MapFragment extends Fragment implements OnStationsFetchedListener {
 					title(s.getStationName()).
 					snippet("Free Bikes: " + s.getBikes() + "\t Free Docks: " + s.getDocks())
 					);
+			
+			mMarkers.add(stationMarker);
 
 		}
+	}
+
+	@Override
+	public boolean onMarkerClick(Marker marker) {
+		
+		return false;
 	}
 }
