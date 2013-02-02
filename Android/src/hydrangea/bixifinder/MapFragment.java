@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.*;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,35 +25,60 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 
-public class MapFragment extends Fragment implements OnStationsFetchedListener{
+public class MapFragment extends Fragment implements OnStationsFetchedListener {
 
 	private Station mStation;
 	private ArrayList<Station> mStations;
 	private GoogleMap map;
-	
+
 	public MapFragment() {
-		//req'd empty constructor
+		// req'd empty constructor
 	}
-	
+
 	public MapFragment(Station station) {
 		mStation = station;
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.map_fragment_stuffer, container);
-		
+
 		Activity ac = getActivity();
+
+		map = ((SupportMapFragment) (getActivity().getSupportFragmentManager()
+				.findFragmentById(R.id.map))).getMap();
+
+		// Center the map around user's last known location
+		LocationManager locationManager = (LocationManager) getActivity()
+				.getSystemService(Context.LOCATION_SERVICE);
+
+		// We just need the rough location, don't need an accurate location
+		String locationProvider = LocationManager.NETWORK_PROVIDER;
+
+		// Finding the location takes time, last known location would be
+		// sufficient for our needs
+		Location lastKnownLocation = locationManager
+				.getLastKnownLocation(locationProvider);
+
+		double latitude = lastKnownLocation.getLatitude();
+		double longitude = lastKnownLocation.getLongitude();
+
+		LatLng pos = new LatLng(latitude, longitude);
 		
-		map = ((SupportMapFragment)(getActivity().getSupportFragmentManager().findFragmentById(R.id.map))).getMap();
+	    // Move the camera instantly to user position with a zoom of 5.
+	    map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 5));
+
+	    // Zoom in, animating the camera.
+	    map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+
 		return view;
 	}
-	
+
 	public void updateDetails() {
 		// Do something here Will
 	}
-	
+
 	public void setStation(Station station) {
 		mStation = station;
 	}
@@ -60,13 +87,12 @@ public class MapFragment extends Fragment implements OnStationsFetchedListener{
 	public void onStationsFetched() {
 		DataConnector dc = DataConnector.getInstance();
 		mStations = dc.getStations();
-		for(Station s: mStations) {
-			LatLng pos = new LatLng(s.getLat(), s.getLng());		
-			
-			Marker stationMarker = map.addMarker(new MarkerOptions().position(pos)
-			        .title(s.getStationName()));
-			
-			
+		for (Station s : mStations) {
+			LatLng pos = new LatLng(s.getLat(), s.getLng());
+
+			Marker stationMarker = map.addMarker(new MarkerOptions().position(
+					pos).title(s.getStationName()));
+
 		}
 	}
 }
