@@ -92,6 +92,10 @@ public class StationsListFragment extends ListFragment implements
 			Station station = mItems.get(position);
 			((TextView) view.findViewById(R.id.stationName)).setText(station
 					.getStationName());
+			
+			((TextView) view.findViewById(R.id.numBikes)).setText("Free Bikes: " + station.getBikes());
+			
+			((TextView) view.findViewById(R.id.numDocks)).setText("Free Docks: " + station.getDocks());
 
 			// Get the necessary views from the layout, that we want to change
 
