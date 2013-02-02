@@ -50,7 +50,6 @@ public class MainActivity extends FragmentActivity implements
 	public void onStationSelected(Station station) {
 
 		// Create the map fragment
-
 		MapFragment mapFragment = null;
 
 		// If mapFragment is not null, we're on a tablet
