@@ -59,6 +59,7 @@ public class Parser {
 		String longitude = null;
 		String numBikes = null;
 		String numEmpty = null;
+		String id = null;
 		while (p.next() != XmlPullParser.END_TAG) {
 			if (p.getEventType() != XmlPullParser.START_TAG) {
 				continue;
@@ -74,11 +75,13 @@ public class Parser {
 				numBikes = readStuff(p, "nbBikes");
 			} else if (n.equals("nbEmptyDocks")) {
 				numEmpty = readStuff(p, "nbEmptyDocks");
+			} else if (n.equals("id")) {
+				id = readStuff(p, "id");
 			} else {
 				skip(p);
 			}
 		}
-		return new Station(name, Integer.parseInt(numBikes), Integer.parseInt(numEmpty), Double.parseDouble(latitude), Double.parseDouble(longitude));
+		return new Station(name, Integer.parseInt(numBikes), Integer.parseInt(numEmpty), Double.parseDouble(latitude), Double.parseDouble(longitude), Integer.parseInt(id));
 	}
 
 	private String readStuff(XmlPullParser p, String tag) throws XmlPullParserException, IOException {
