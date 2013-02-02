@@ -61,7 +61,7 @@ public class StationsListFragment extends ListFragment {
 		ArrayList<Station> list = new ArrayList<Station>();
 		
 		for(int i = 0; i < 10; i++) {
-			Station s = new Station("Station " + i, i, 10-i);
+			Station s = new Station("Station " + i, i, 10-i, i, i);
 			list.add(s);
 		}
 		
