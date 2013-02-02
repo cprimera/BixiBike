@@ -22,7 +22,7 @@ public class StationsListFragment extends ListFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstacneState) {
-
+		
 		View view = inflater.inflate(R.layout.list_fragment_stations,
 				container, false);
 
