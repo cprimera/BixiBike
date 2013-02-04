@@ -4,14 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -21,7 +15,7 @@ import hydrangea.bixifinder.models.Station;
 
 import java.util.ArrayList;
 
-public class MapController extends Fragment implements OnMarkerClickListener {
+public class MapController extends SupportMapFragment{
 
 	private int mSelected;
 	private Station mStation;
@@ -31,26 +25,20 @@ public class MapController extends Fragment implements OnMarkerClickListener {
 	
 	private Marker mUserMarker;
 
-	public MapController() {
-		// req'd empty constructor
+    private Activity mActivity;
+
+	public MapController(Activity activity) {
+        mActivity = activity;
 	}
 
-	public MapController(Station station) {
-		mStation = station;
-	}
+	public void initialize(GoogleMap gmap) {
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.map_fragment_stuffer, container);
-
-		Activity ac = getActivity();
-
-		map = ((SupportMapFragment) (getActivity().getSupportFragmentManager()
-				.findFragmentById(R.id.map))).getMap();
+        map = gmap;
+//		map = ((SupportMapFragment) (((FragmentActivity)mActivity).getSupportFragmentManager()
+//				.findFragmentById(R.id.map))).getMap();
 
 		// Center the map around user's last known location
-		LocationManager locationManager = (LocationManager) getActivity()
+		LocationManager locationManager = (LocationManager) mActivity
 				.getSystemService(Context.LOCATION_SERVICE);
 
 		// We just need the rough location, don't need an accurate location
@@ -61,8 +49,13 @@ public class MapController extends Fragment implements OnMarkerClickListener {
 		Location lastKnownLocation = locationManager
 				.getLastKnownLocation(locationProvider);
 
-		double latitude = lastKnownLocation.getLatitude();
-		double longitude = lastKnownLocation.getLongitude();
+        double latitude = 43.6481;
+        double longitude = 79.4042;
+//
+//        if(lastKnownLocation != null) {
+//		 latitude = lastKnownLocation.getLatitude();
+//		 longitude = lastKnownLocation.getLongitude();
+//        }
 
 		LatLng pos = new LatLng(latitude, longitude);
 		
@@ -79,11 +72,7 @@ public class MapController extends Fragment implements OnMarkerClickListener {
                 );
 	    
 	    
-	    // Add listeners for markers
-	    map.setOnMarkerClickListener(this);
-	    
-		return view;
-	}
+    }
 
 	public void updateDetails() {
 		LatLng pos = new LatLng(mStation.getLat(), mStation.getLng());
@@ -100,26 +89,21 @@ public class MapController extends Fragment implements OnMarkerClickListener {
 		DataConnector dc = DataConnector.getInstance();
 		mStations = dc.getStations();
 		mMarkers = new ArrayList<Marker>();
-		for (Station s : mStations) {
-			LatLng pos = new LatLng(s.getLat(), s.getLng());
-			
-//			Drawable myIcon = getResources().getDrawable( R.drawable.cycling );
 
-			Marker stationMarker = map.addMarker(new MarkerOptions().
-					position(pos).
-					title(s.getStationName()).
-					snippet("Free Bikes: " + s.getBikes() + "\t Free Docks: " + s.getDocks()).
-					icon(BitmapDescriptorFactory.fromResource(R.drawable.cycling))
-					);
-			
-			mMarkers.add(stationMarker);
+        if(map != null) {
+            for (Station s : mStations) {
+                LatLng pos = new LatLng(s.getLat(), s.getLng());
 
-		}
-	}
+                Marker stationMarker = map.addMarker(new MarkerOptions().
+                        position(pos).
+                        title(s.getStationName()).
+                        snippet("Free Bikes: " + s.getBikes() + "\t Free Docks: " + s.getDocks()).
+                        icon(BitmapDescriptorFactory.fromResource(R.drawable.cycling))
+                        );
 
-	@Override
-	public boolean onMarkerClick(Marker marker) {
-		
-		return false;
+                mMarkers.add(stationMarker);
+
+            }
+        }
 	}
 }

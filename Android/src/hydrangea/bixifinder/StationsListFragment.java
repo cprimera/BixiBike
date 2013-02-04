@@ -1,7 +1,5 @@
 package hydrangea.bixifinder;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,19 +9,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import hydrangea.bixifinder.MainActivity.OnStationsFetchedListener;
 import hydrangea.bixifinder.models.Station;
+import java.util.ArrayList;
 
-public class StationsListFragment extends ListFragment implements
-		OnStationsFetchedListener {
+public class StationsListFragment extends ListFragment{
 
 	ArrayList<Station> mStations;
 	StationAdapter mAdapter;
 	OnStationSelectedListener mCallback;
+
+    private static String LOG_TAG = "BIXI_FINDER";
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -113,10 +110,12 @@ public class StationsListFragment extends ListFragment implements
 		public void onStationSelected(int station);
 	}
 
-	@Override
 	public void onStationsFetched() {
 		DataConnector dc = DataConnector.getInstance();
 		mStations = dc.getStations();
+
+        Log.d(LOG_TAG, "Updating mStations list, entries: " + mStations.size());
+
 		mAdapter.updateStationsList(mStations);
 		mAdapter.notifyDataSetChanged();
 	}

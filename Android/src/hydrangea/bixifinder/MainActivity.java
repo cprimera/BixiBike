@@ -3,31 +3,34 @@ package hydrangea.bixifinder;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import hydrangea.bixifinder.StationsListFragment.OnStationSelectedListener;
-import hydrangea.bixifinder.models.Station;
+import android.util.Log;
+import android.view.Menu;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.maps.SupportMapFragment;
+import hydrangea.bixifinder.StationsListFragment.OnStationSelectedListener;
 
 public class MainActivity extends FragmentActivity implements
 		OnStationSelectedListener {
+
 	int SHOW_ERROR = 0;
+
 	final private String BIXI = "Bixi";
 
-	OnStationsFetchedListener mCallback;
-	OnStationsFetchedListener mListCallback;
-	
 	private Activity mActivity;
+    private MapController mapController;
+    private StationsListFragment listFragment;
+
+    private static final String LOG_TAG = "BIXI_FINDER";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		mActivity = (Activity) this;
+
+        mapController = new MapController(this);
 
 		int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 
@@ -45,8 +48,7 @@ public class MainActivity extends FragmentActivity implements
 				return;
 			}
 
-			StationsListFragment listFragment = new StationsListFragment();
-			mListCallback = (OnStationsFetchedListener) listFragment;
+			listFragment = new StationsListFragment();
 
 			// Pass on extras from the intent that
 			// started the activity to the fragment
@@ -57,15 +59,14 @@ public class MainActivity extends FragmentActivity implements
 					.add(R.id.fragment_container, listFragment).commit();
 
 		} else {
+            // We're on a tablet
 
-			StationsListFragment listFragment = (StationsListFragment) getSupportFragmentManager()
+			 listFragment = (StationsListFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.list_fragment);
-			mListCallback = (OnStationsFetchedListener) listFragment;
 
-			MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
-					.findFragmentById(R.id.map_fragment);
-			mCallback = (OnStationsFetchedListener) mapFragment;
+             SupportMapFragment smf = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
 
+             mapController.initialize(smf.getMap());
 		}
 
 		// Start loading the data in the background
@@ -86,31 +87,31 @@ public class MainActivity extends FragmentActivity implements
 	public void onStationSelected(int station) {
 
 		// Create the map fragment
-
-		MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.map_fragment);
+		Fragment mapFragment = getSupportFragmentManager().findFragmentById(R.id.map);
 
 		Log.d("MYTAG", "Done loading fragment");
 
 		// If mapFragment is not null, we're on a tablet
-		// else we're on a phone
 		if (mapFragment != null) {
 			// Update the information displayed
-			mapFragment.setStation(station);
-			mapFragment.updateDetails();
-			mCallback = (OnStationsFetchedListener) mapFragment;
+			mapController.setStation(station);
+			mapController.updateDetails();
 
 		} else {
-
-			MapFragment newFragment = new MapFragment();
+            // On a phone
+            mapFragment = new SupportMapFragment();
 
 			FragmentTransaction transaction = getSupportFragmentManager()
 					.beginTransaction();
 
-			transaction.replace(R.id.fragment_container, newFragment);
+			transaction.replace(R.id.fragment_container, mapFragment);
 			transaction.addToBackStack(null);
 
 			transaction.commit();
+
+            mapController.initialize(((SupportMapFragment)mapFragment).getMap());
+            mapController.setStation(station);
+            mapController.updateDetails();
 		}
 
 	}
@@ -125,7 +126,6 @@ public class MainActivity extends FragmentActivity implements
 				dc.downloadStations(mActivity);
 
 			} catch (Exception e) {
-				e.printStackTrace();
 			}
 
 			return null;
@@ -133,14 +133,13 @@ public class MainActivity extends FragmentActivity implements
 
 		@Override
 		protected void onPostExecute(final Void result) {
-			if(mCallback != null) mCallback.onStationsFetched();
-			mListCallback.onStationsFetched();
+
+            Log.d(LOG_TAG, "Retrived the list, updating list and map");
+
+			listFragment.onStationsFetched();
+            mapController.onStationsFetched();
 		}
 
-	}
-
-	public interface OnStationsFetchedListener {
-		public void onStationsFetched();
 	}
 
 }
