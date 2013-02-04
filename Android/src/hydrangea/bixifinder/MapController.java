@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -27,13 +31,18 @@ public class MapController extends SupportMapFragment{
 
     private Activity mActivity;
 
-	public MapController(Activity activity) {
-        mActivity = activity;
+	public MapController() {
+        super();
 	}
 
-	public void initialize(GoogleMap gmap) {
+    @Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        map = gmap;
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        mActivity = this.getActivity();
+
+        map = this.getMap();
 //		map = ((SupportMapFragment) (((FragmentActivity)mActivity).getSupportFragmentManager()
 //				.findFragmentById(R.id.map))).getMap();
 
@@ -50,7 +59,7 @@ public class MapController extends SupportMapFragment{
 				.getLastKnownLocation(locationProvider);
 
         double latitude = 43.6481;
-        double longitude = 79.4042;
+        double longitude = -79.4042;
 //
 //        if(lastKnownLocation != null) {
 //		 latitude = lastKnownLocation.getLatitude();
@@ -70,8 +79,12 @@ public class MapController extends SupportMapFragment{
 				position(pos).
 				title("You're Here")
                 );
-	    
-	    
+
+        if(DataConnector.getInstance().getStations().size() > 0) {
+            onStationsFetched();
+        }
+
+        return view;
     }
 
 	public void updateDetails() {

@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.maps.SupportMapFragment;
 import hydrangea.bixifinder.StationsListFragment.OnStationSelectedListener;
 
 public class MainActivity extends FragmentActivity implements
@@ -30,7 +29,7 @@ public class MainActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-        mapController = new MapController(this);
+        mActivity = this;
 
 		int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 
@@ -63,10 +62,6 @@ public class MainActivity extends FragmentActivity implements
 
 			 listFragment = (StationsListFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.list_fragment);
-
-             SupportMapFragment smf = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-
-             mapController.initialize(smf.getMap());
 		}
 
 		// Start loading the data in the background
@@ -99,19 +94,19 @@ public class MainActivity extends FragmentActivity implements
 
 		} else {
             // On a phone
-            mapFragment = new SupportMapFragment();
+            mapController = new MapController();
 
 			FragmentTransaction transaction = getSupportFragmentManager()
 					.beginTransaction();
 
-			transaction.replace(R.id.fragment_container, mapFragment);
+			transaction.replace(R.id.fragment_container, mapController);
 			transaction.addToBackStack(null);
 
 			transaction.commit();
 
-            mapController.initialize(((SupportMapFragment)mapFragment).getMap());
-            mapController.setStation(station);
-            mapController.updateDetails();
+//            mapController.initialize(((SupportMapFragment)mapFragment).getMap());
+//            mapController.setStation(station);
+//            mapController.updateDetails();
 		}
 
 	}
@@ -137,7 +132,7 @@ public class MainActivity extends FragmentActivity implements
             Log.d(LOG_TAG, "Retrived the list, updating list and map");
 
 			listFragment.onStationsFetched();
-            mapController.onStationsFetched();
+            if(mapController != null) mapController.onStationsFetched();
 		}
 
 	}
