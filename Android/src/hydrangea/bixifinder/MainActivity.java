@@ -103,7 +103,6 @@ public class MainActivity extends FragmentActivity implements
 		} else {
 
 			MapFragment newFragment = new MapFragment();
-			mCallback = (OnStationsFetchedListener) mapFragment;
 
 			FragmentTransaction transaction = getSupportFragmentManager()
 					.beginTransaction();
