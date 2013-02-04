@@ -3,7 +3,6 @@ package hydrangea.bixifinder;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -62,6 +61,8 @@ public class MainActivity extends FragmentActivity implements
 
 			 listFragment = (StationsListFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.list_fragment);
+
+             mapController = (MapController) getSupportFragmentManager().findFragmentById(R.id.map);
 		}
 
 		// Start loading the data in the background
@@ -81,13 +82,11 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public void onStationSelected(int station) {
 
-		// Create the map fragment
-		Fragment mapFragment = getSupportFragmentManager().findFragmentById(R.id.map);
 
 		Log.d("MYTAG", "Done loading fragment");
 
 		// If mapFragment is not null, we're on a tablet
-		if (mapFragment != null) {
+		if (mapController != null) {
 			// Update the information displayed
 			mapController.setStation(station);
 			mapController.updateDetails();
