@@ -1,33 +1,27 @@
 package hydrangea.bixifinder;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.support.v4.app.*;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-import hydrangea.bixifinder.MainActivity.OnStationsFetchedListener;
-import hydrangea.bixifinder.models.Station;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.SupportMapFragment;
+import hydrangea.bixifinder.models.Station;
 
-public class MapFragment extends Fragment implements OnStationsFetchedListener, OnMarkerClickListener {
+import java.util.ArrayList;
+
+public class MapController extends Fragment implements OnMarkerClickListener {
 
 	private int mSelected;
 	private Station mStation;
@@ -37,11 +31,11 @@ public class MapFragment extends Fragment implements OnStationsFetchedListener, 
 	
 	private Marker mUserMarker;
 
-	public MapFragment() {
+	public MapController() {
 		// req'd empty constructor
 	}
 
-	public MapFragment(Station station) {
+	public MapController(Station station) {
 		mStation = station;
 	}
 
@@ -102,7 +96,6 @@ public class MapFragment extends Fragment implements OnStationsFetchedListener, 
 		mStation = mStations.get(station);
 	}
 
-	@Override
 	public void onStationsFetched() {
 		DataConnector dc = DataConnector.getInstance();
 		mStations = dc.getStations();
