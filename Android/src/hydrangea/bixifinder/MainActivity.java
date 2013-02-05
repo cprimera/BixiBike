@@ -3,6 +3,7 @@ package hydrangea.bixifinder;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -14,8 +15,6 @@ public class MainActivity extends FragmentActivity implements
 		OnStationSelectedListener {
 
 	int SHOW_ERROR = 0;
-
-	final private String BIXI = "Bixi";
 
 	private Activity mActivity;
     private MapController mapController;
@@ -85,8 +84,13 @@ public class MainActivity extends FragmentActivity implements
 
 		Log.d("MYTAG", "Done loading fragment");
 
-		// If mapFragment is not null, we're on a tablet
-		if (mapController != null) {
+
+        // We get this just for testing if we're on a tablet or a phone
+        Fragment mapFragment = getSupportFragmentManager().findFragmentById(R.id.map);
+
+
+        // If mapFragment is not null, we're on a tablet
+		if (mapFragment != null) {
 			// Update the information displayed
 			mapController.setStation(station);
 			mapController.updateDetails();
@@ -94,6 +98,7 @@ public class MainActivity extends FragmentActivity implements
 		} else {
             // On a phone
             mapController = new MapController();
+            mapController.setStation(station);
 
 			FragmentTransaction transaction = getSupportFragmentManager()
 					.beginTransaction();
@@ -131,7 +136,7 @@ public class MainActivity extends FragmentActivity implements
             Log.d(LOG_TAG, "Retrived the list, updating list and map");
 
 			listFragment.onStationsFetched();
-            if(mapController != null) mapController.onStationsFetched();
+            if(mapController != null) mapController.populateStations();
 		}
 
 	}

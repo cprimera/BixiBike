@@ -1,9 +1,5 @@
 package hydrangea.bixifinder;
 
-import android.app.Activity;
-import android.content.Context;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,17 +17,13 @@ import java.util.ArrayList;
 
 public class MapController extends SupportMapFragment{
 
-	private int mSelected;
+	private int mSelected = -1;
 	private Station mStation;
 	private ArrayList<Station> mStations;
 	private ArrayList<Marker> mMarkers;
 	private GoogleMap map;
-	
-	private Marker mUserMarker;
 
-    private Activity mActivity;
-
-	public MapController() {
+    public MapController() {
         super();
 	}
 
@@ -39,66 +31,51 @@ public class MapController extends SupportMapFragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = super.onCreateView(inflater, container, savedInstanceState);
-
-        mActivity = this.getActivity();
-
         map = this.getMap();
-//		map = ((SupportMapFragment) (((FragmentActivity)mActivity).getSupportFragmentManager()
-//				.findFragmentById(R.id.map))).getMap();
 
-		// Center the map around user's last known location
-		LocationManager locationManager = (LocationManager) mActivity
-				.getSystemService(Context.LOCATION_SERVICE);
-
-		// We just need the rough location, don't need an accurate location
-		String locationProvider = LocationManager.NETWORK_PROVIDER;
-
-		// Finding the location takes time, last known location would be
-		// sufficient for our needs
-		Location lastKnownLocation = locationManager
-				.getLastKnownLocation(locationProvider);
-
-        double latitude = 43.6481;
-        double longitude = -79.4042;
-//
-//        if(lastKnownLocation != null) {
-//		 latitude = lastKnownLocation.getLatitude();
-//		 longitude = lastKnownLocation.getLongitude();
-//        }
-
-		LatLng pos = new LatLng(latitude, longitude);
-		
-	    // Move the camera instantly to user position with a zoom of 5.
-	    map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 5));
-
-	    // Zoom in, animating the camera.
-	    map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-
-	    
-	    mUserMarker = map.addMarker(new MarkerOptions().
-				position(pos).
-				title("You're Here")
-                );
+        LatLng pos = DataConnector.getInstance().getUserLocation(getActivity());
 
         if(DataConnector.getInstance().getStations().size() > 0) {
-            onStationsFetched();
+            populateStations();
         }
+
+        if(mSelected == -1){
+            // Move the camera instantly to user position with a zoom of 5.
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 5));
+
+            // Zoom in, animating the camera.
+            map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+        }
+
+
+        map.addMarker(new MarkerOptions().
+                position(pos).
+                title("You're Here")
+        );
+
+        updateDetails();
 
         return view;
     }
 
 	public void updateDetails() {
-		LatLng pos = new LatLng(mStation.getLat(), mStation.getLng());
-		map.animateCamera(CameraUpdateFactory.newLatLng(pos), 1000, null);
-		mMarkers.get(mSelected).showInfoWindow();
+        if(mSelected != -1){
+            if(mStation == null) mStation = mStations.get(mSelected);
+            LatLng pos = new LatLng(mStation.getLat(), mStation.getLng());
+            map.animateCamera(CameraUpdateFactory.newLatLng(pos), 1000, null);
+            mMarkers.get(mSelected).showInfoWindow();
+
+            // Zoom in, animating the camera.
+            map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+        }
 	}
 
 	public void setStation(int station) {
 		mSelected = station;
-		mStation = mStations.get(station);
+		if(mStations != null) mStation = mStations.get(station);
 	}
 
-	public void onStationsFetched() {
+	public void populateStations() {
 		DataConnector dc = DataConnector.getInstance();
 		mStations = dc.getStations();
 		mMarkers = new ArrayList<Marker>();
@@ -110,7 +87,7 @@ public class MapController extends SupportMapFragment{
                 Marker stationMarker = map.addMarker(new MarkerOptions().
                         position(pos).
                         title(s.getStationName()).
-                        snippet("Free Bikes: " + s.getBikes() + "\t Free Docks: " + s.getDocks()).
+                        snippet("Bikes: " + s.getBikes() + "\t Docks: " + s.getDocks()).
                         icon(BitmapDescriptorFactory.fromResource(R.drawable.cycling))
                         );
 

@@ -1,13 +1,18 @@
 package hydrangea.bixifinder;
 
 import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.util.Log;
+import com.google.android.gms.maps.model.LatLng;
 import hydrangea.bixifinder.models.Station;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DataConnector {
 
@@ -40,26 +45,26 @@ public class DataConnector {
 
         Log.d(LOG_TAG, "Downloading Stations");
 
-//		// Center the map around user's last known location
-//		LocationManager locationManager = (LocationManager) activity
-//				.getSystemService(Context.LOCATION_SERVICE);
-//
-//		// We just need the rough location, don't need an accurate location
-//		String locationProvider = LocationManager.NETWORK_PROVIDER;
-//
-//		// Finding the location takes time, last known location would be
-//		// sufficient for our needs
-//		Location lastKnownLocation = locationManager
-//				.getLastKnownLocation(locationProvider);
-//
-//        double latitude = 43.6481;
-//        double longitude = 79.4042;
-//
-//        if(lastKnownLocation == null) {
-//            lastKnownLocation = new Location("");
-//		    lastKnownLocation.setLatitude(latitude);
-//		    lastKnownLocation.setLongitude(longitude);
-//        }
+		// Center the map around user's last known location
+		LocationManager locationManager = (LocationManager) activity
+				.getSystemService(Context.LOCATION_SERVICE);
+
+		// We just need the rough location, don't need an accurate location
+		String locationProvider = LocationManager.NETWORK_PROVIDER;
+
+		// Finding the location takes time, last known location would be
+		// sufficient for our needs
+		Location lastKnownLocation = locationManager
+				.getLastKnownLocation(locationProvider);
+
+        double latitude = 43.6481;
+        double longitude = 79.4042;
+
+        if(lastKnownLocation == null) {
+            lastKnownLocation = new Location("");
+		    lastKnownLocation.setLatitude(latitude);
+		    lastKnownLocation.setLongitude(longitude);
+        }
 
 		Parser p = new Parser();
 		ArrayList<Station> list = null;
@@ -69,12 +74,12 @@ public class DataConnector {
             Log.d(LOG_TAG, "Number of stations 1: " + list.size());
 
 			for (Station s : list) {
-//				Location loc = new Location("");
-//				loc.setLatitude(s.getLat());
-//				loc.setLongitude(s.getLng());
-//
-//				double dist = loc.distanceTo(lastKnownLocation);
-//				s.setDist(dist);
+				Location loc = new Location("");
+				loc.setLatitude(s.getLat());
+				loc.setLongitude(s.getLng());
+
+				double dist = loc.distanceTo(lastKnownLocation);
+				s.setDist(dist);
 
 			}
 		} catch (Exception e) {
@@ -84,7 +89,7 @@ public class DataConnector {
         Log.d(LOG_TAG, "Number of stations: " + list.size());
 
 		if (list != null) {
-//			Collections.sort(list);
+			Collections.sort(list);
 
 			for (Station s : list) {
 				mStations.add(s);
@@ -138,4 +143,30 @@ public class DataConnector {
 		reader.read(buffer);
 		return new String(buffer);
 	}
+
+    public LatLng getUserLocation(Activity activity){
+
+
+		LocationManager locationManager = (LocationManager)activity.getSystemService(Context.LOCATION_SERVICE);
+
+		// We just need the rough location, don't need an accurate location
+		String locationProvider = LocationManager.NETWORK_PROVIDER;
+
+		// Finding the location takes time, last known location would be
+		// sufficient for our needs
+		Location lastKnownLocation = locationManager
+				.getLastKnownLocation(locationProvider);
+
+        double latitude = 43.6481;
+        double longitude = -79.4042;
+
+        if(lastKnownLocation != null) {
+            latitude = lastKnownLocation.getLatitude();
+            longitude = lastKnownLocation.getLongitude();
+        }
+
+		LatLng pos = new LatLng(latitude, longitude);
+
+        return pos;
+    }
 }
