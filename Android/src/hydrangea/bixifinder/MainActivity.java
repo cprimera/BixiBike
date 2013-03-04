@@ -14,13 +14,13 @@ import hydrangea.bixifinder.StationsListFragment.OnStationSelectedListener;
 public class MainActivity extends FragmentActivity implements
 		OnStationSelectedListener {
 
-	int SHOW_ERROR = 0;
+	int SHOW_ERROR = 0; // Don't show errors
 
 	private Activity mActivity;
     private MapController mapController;
     private StationsListFragment listFragment;
 
-    private static final String LOG_TAG = "BIXI_FINDER";
+    private static final String LOG_TAG = "MainActivity";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +82,7 @@ public class MainActivity extends FragmentActivity implements
 	public void onStationSelected(int station) {
 
 
-		Log.d("MYTAG", "Done loading fragment");
+		Log.d(LOG_TAG, "Done loading fragment");
 
 
         // We get this just for testing if we're on a tablet or a phone
@@ -107,10 +107,6 @@ public class MainActivity extends FragmentActivity implements
 			transaction.addToBackStack(null);
 
 			transaction.commit();
-
-//            mapController.initialize(((SupportMapFragment)mapFragment).getMap());
-//            mapController.setStation(station);
-//            mapController.updateDetails();
 		}
 
 	}
