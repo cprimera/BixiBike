@@ -30,6 +30,8 @@ MKUserLocation *location;
 {
     [super viewDidLoad];
     
+    appdelegate = ((AppDelegate *)[[UIApplication sharedApplication] delegate]);
+    
     self.navigationItem.title = @"List";
     MKMapView *map = [[MKMapView alloc] init];
     map.delegate = self;
@@ -47,35 +49,35 @@ MKUserLocation *location;
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
--(void)refreshControlRequest {
-    [appdelegate updateData:self.refreshControl];
+-(void)dataUpdated{
+//    NSLog(@"Data Updated");
     [self.tableView reloadData];
-    [((MapViewController *)_detailViewController) updateData];
-    //[self.refreshControl endRefreshing];
+    if ([self.refreshControl isRefreshing]) {
+        [self.refreshControl endRefreshing];
+    }
+}
+
+-(void)refreshControlRequest {
+    if (appdelegate.stations.updating == NO) {
+        [appdelegate.stations requestUpdate];
+    }
+
 }
 
 -(void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation {
     location = userLocation;
-    [self.tableView reloadData];
+    [appdelegate.stations setCoordinate:location.location.coordinate];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    appdelegate = ((AppDelegate *)[[UIApplication sharedApplication] delegate]);
-    [appdelegate.stations sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        Station *station1 = (Station *)obj1;
-        Station *station2 = (Station *)obj2;
-        CLLocation *stat1 = [[CLLocation alloc] initWithLatitude:station1.coord.latitude longitude:station1.coord.longitude];
-        CLLocation *stat2 = [[CLLocation alloc] initWithLatitude:station2.coord.latitude longitude:station2.coord.longitude];
-        CLLocation *me = [[CLLocation alloc] initWithLatitude:location.location.coordinate.latitude longitude:location.location.coordinate.longitude];
-        if ([me distanceFromLocation:stat1] > [me distanceFromLocation:stat2]) {
-            return (NSComparisonResult)NSOrderedDescending;
-        }
-        if ([me distanceFromLocation:stat1] < [me distanceFromLocation:stat1]) {
-            return (NSComparisonResult)NSOrderedAscending;
-        }
-        return (NSComparisonResult)NSOrderedSame;
-    }];
+//    [appdelegate.stations receiveNotifications:self];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataUpdated) name:@"StationsUpdatedNotification" object:appdelegate.stations];
+    [appdelegate.stations sort];
     [self.tableView reloadData];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"StationsUpdatedNotification" object:appdelegate.stations];
 }
 
 - (void)didReceiveMemoryWarning
@@ -88,16 +90,14 @@ MKUserLocation *location;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return appdelegate.stations.count;
+    return appdelegate.stations.stations.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -106,8 +106,8 @@ MKUserLocation *location;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     // Configure the cell...
-    cell.textLabel.text = ((Station *)[appdelegate.stations objectAtIndex:indexPath.row]).name;
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"Bikes Available: %d  Docks Available: %d", ((Station *)[appdelegate.stations objectAtIndex:indexPath.row]).numBikes, ((Station *)[appdelegate.stations objectAtIndex:indexPath.row]).numSpots];
+    cell.textLabel.text = ((Station *)[appdelegate.stations.stations objectAtIndex:indexPath.row]).name;
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"Bikes Available: %d  Docks Available: %d", ((Station *)[appdelegate.stations.stations objectAtIndex:indexPath.row]).numBikes, ((Station *)[appdelegate.stations.stations objectAtIndex:indexPath.row]).numSpots];
     
     return cell;
 }
@@ -157,10 +157,10 @@ MKUserLocation *location;
 {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         MapViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"map"];
-        [vc setHighlight:[appdelegate.stations objectAtIndex:indexPath.row]];
+        [vc setHighlight:[appdelegate.stations.stations objectAtIndex:indexPath.row]];
         [self.navigationController pushViewController:vc animated:YES];
     } else {
-        ((MapViewController *)_detailViewController).highlight = [appdelegate.stations objectAtIndex:indexPath.row];
+        ((MapViewController *)_detailViewController).highlight = [appdelegate.stations.stations objectAtIndex:indexPath.row];
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }

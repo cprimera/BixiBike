@@ -20,10 +20,12 @@ bool updateRegion = FALSE;
 MKUserLocation *user;
 
 -(void)viewDidLoad {
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.navigationItem.title = @"Map";
 }
 
 -(void)viewWillAppear:(BOOL)animated {
+    
     if (_highlight == nil) {
         updateRegion = TRUE;
     }
@@ -33,6 +35,12 @@ MKUserLocation *user;
     if (_highlight != nil) {
         [_map setRegion:MKCoordinateRegionMake(_highlight.coord, MKCoordinateSpanMake(0.01f, 0.01f)) animated:NO];
     }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateData) name:@"StationsUpdatedNotification" object:appDelegate.stations];
+//    [appDelegate.stations receiveNotifications:self];
+}
+
+-(void)viewWillDisappear:(BOOL)animated {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"StationsUpdatedNotification" object:appDelegate.stations];
 }
 
 -(void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation {
@@ -41,7 +49,9 @@ MKUserLocation *user;
         [_map setRegion:MKCoordinateRegionMake(userLocation.coordinate, MKCoordinateSpanMake(0.01f, 0.01f)) animated:NO];
         updateRegion = FALSE;
     }
-    [self updateData];
+    if (appDelegate.stations.updating == NO) {
+        [appDelegate.stations requestUpdate];
+    }
 }
 
 -(void)mapViewDidFinishLoadingMap:(MKMapView *)mapView {
@@ -52,50 +62,36 @@ MKUserLocation *user;
     if ([annotation class] == [MKUserLocation class]) {
         return nil;
     }
-    if (_highlight == nil) {
-        if (((Annotation *)annotation).closest == 1) {
-            MKPinAnnotationView *pin = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pinG"];
-            if (pin == nil) {
-                pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pinG"];
-            }
-            [pin setAnnotation:annotation];
-            [pin setPinColor:MKPinAnnotationColorGreen];
-            [pin setCanShowCallout:YES];
-            //[pin setAnimatesDrop:YES];
-            return pin;
-        } else {
-            MKPinAnnotationView *pin = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pin"];
-            if (pin == nil) {
-                pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pin"];
-            }
-            [pin setAnnotation:annotation];
-            [pin setPinColor:MKPinAnnotationColorRed];
-            [pin setCanShowCallout:YES];
-            //[pin setAnimatesDrop:YES];
-            return pin;
+    if (_highlight != nil && [((Annotation *)annotation).title isEqualToString:_highlight.name]) {
+        MKPinAnnotationView *pin = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pinP"];
+        if (pin == nil) {
+            pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pinP"];
         }
+        [pin setAnnotation:annotation];
+        [pin setPinColor:MKPinAnnotationColorPurple];
+        [pin setCanShowCallout:YES];
+        //[pin setAnimatesDrop:YES];
+        return pin;
+    } else if (((Annotation *)annotation).closest == 1) {
+        MKPinAnnotationView *pin = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pinG"];
+        if (pin == nil) {
+            pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pinG"];
+        }
+        [pin setAnnotation:annotation];
+        [pin setPinColor:MKPinAnnotationColorGreen];
+        [pin setCanShowCallout:YES];
+        //[pin setAnimatesDrop:YES];
+        return pin;
     } else {
-        if ([((Annotation *)annotation).title isEqualToString:_highlight.name]) {
-            MKPinAnnotationView *pin = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pinP"];
-            if (pin == nil) {
-                pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pinP"];
-            }
-            [pin setAnnotation:annotation];
-            [pin setPinColor:MKPinAnnotationColorPurple];
-            [pin setCanShowCallout:YES];
-            //[pin setAnimatesDrop:YES];
-            return pin;
-        } else {
-            MKPinAnnotationView *pin = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pin"];
-            if (pin == nil) {
-                pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pin"];
-            }
-            [pin setAnnotation:annotation];
-            [pin setPinColor:MKPinAnnotationColorRed];
-            [pin setCanShowCallout:YES];
-            //[pin setAnimatesDrop:YES];
-            return pin;
+        MKPinAnnotationView *pin = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pin"];
+        if (pin == nil) {
+            pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pin"];
         }
+        [pin setAnnotation:annotation];
+        [pin setPinColor:MKPinAnnotationColorRed];
+        [pin setCanShowCallout:YES];
+        //[pin setAnimatesDrop:YES];
+        return pin;
     }
 }
 
@@ -127,36 +123,36 @@ MKUserLocation *user;
 }
 
 -(void)updateData {
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        
-    NSInteger close = 0;
-    double dist = DBL_MAX;
-    NSMutableArray *annotations = [[NSMutableArray alloc] init];
-    for (Station *s in appDelegate.stations) {
-        Annotation *an = [[Annotation alloc] init];
-        [an setCoordinate:s.coord];
-        [an setTitle:s.name];
-        [an setSubtitle:[NSString stringWithFormat:@"Bikes Available: %d  Docks Available: %d", s.numBikes, s.numSpots]];
-        [an setClosest:0];
-        
-        [annotations addObject:an];
-        
-        CLLocation *loc = [[CLLocation alloc] initWithLatitude:s.coord.latitude longitude:s.coord.longitude];
-        
-        double tempdist = [loc distanceFromLocation:[[CLLocation alloc] initWithLatitude:user.coordinate.latitude longitude:user.coordinate.longitude]];
-        if (dist >= tempdist) {
-            dist = tempdist;
-            close = [annotations indexOfObject:an];
+    if (appDelegate.stations.stations.count != 0) {
+        NSInteger close = 0;
+        double dist = DBL_MAX;
+        NSMutableArray *annotations = [[NSMutableArray alloc] init];
+        for (Station *s in appDelegate.stations.stations) {
+            Annotation *an = [[Annotation alloc] init];
+            [an setCoordinate:s.coord];
+            [an setTitle:s.name];
+            [an setSubtitle:[NSString stringWithFormat:@"Bikes Available: %d  Docks Available: %d", s.numBikes, s.numSpots]];
+            [an setClosest:0];
+            
+            [annotations addObject:an];
+            
+            CLLocation *loc = [[CLLocation alloc] initWithLatitude:s.coord.latitude longitude:s.coord.longitude];
+            
+            double tempdist = [loc distanceFromLocation:[[CLLocation alloc] initWithLatitude:user.coordinate.latitude longitude:user.coordinate.longitude]];
+            if (dist >= tempdist) {
+                dist = tempdist;
+                close = [annotations indexOfObject:an];
+            }
+            
         }
-        
-    }
-    ((Annotation *)[annotations objectAtIndex:close]).closest = 1;
-    for (Annotation *a in _map.annotations) {
-        if ([a class] == [Annotation class]) {
-            [_map removeAnnotation:a];
+        ((Annotation *)[annotations objectAtIndex:close]).closest = 1;
+        for (Annotation *a in _map.annotations) {
+            if ([a class] == [Annotation class]) {
+                [_map removeAnnotation:a];
+            }
         }
+        [_map addAnnotations:annotations];
     }
-    [_map addAnnotations:annotations];
 }
 
 @end

@@ -21,6 +21,7 @@
 		2F5C3FF716BD5653009CD76D /* icon@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F5C3FF616BD5653009CD76D /* icon@2x~iphone.png */; };
 		2F5C3FF916BD56A6009CD76D /* icon~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F5C3FF816BD56A6009CD76D /* icon~ipad.png */; };
 		2F5C3FFB16BD56E1009CD76D /* icon@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F5C3FFA16BD56E1009CD76D /* icon@2x~ipad.png */; };
+		2F5C3FFE16BD848E009CD76D /* Stations.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F5C3FFD16BD848E009CD76D /* Stations.m */; };
 		2FA999B116BC87C3003EDE04 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FA999B016BC87C3003EDE04 /* UIKit.framework */; };
 		2FA999B316BC87C3003EDE04 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FA999B216BC87C3003EDE04 /* Foundation.framework */; };
 		2FA999B516BC87C3003EDE04 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FA999B416BC87C3003EDE04 /* CoreGraphics.framework */; };
@@ -53,6 +54,8 @@
 		2F5C3FF616BD5653009CD76D /* icon@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x~iphone.png"; sourceTree = "<group>"; };
 		2F5C3FF816BD56A6009CD76D /* icon~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon~ipad.png"; sourceTree = "<group>"; };
 		2F5C3FFA16BD56E1009CD76D /* icon@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x~ipad.png"; sourceTree = "<group>"; };
+		2F5C3FFC16BD848E009CD76D /* Stations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stations.h; sourceTree = "<group>"; };
+		2F5C3FFD16BD848E009CD76D /* Stations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Stations.m; sourceTree = "<group>"; };
 		2FA999AC16BC87C3003EDE04 /* BixiBike.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BixiBike.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FA999B016BC87C3003EDE04 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		2FA999B216BC87C3003EDE04 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -149,6 +152,8 @@
 				2F281E0C16BCBEA70004B937 /* Annotation.m */,
 				2F5C3FE516BD06F4009CD76D /* ListViewController.h */,
 				2F5C3FE616BD06F4009CD76D /* ListViewController.m */,
+				2F5C3FFC16BD848E009CD76D /* Stations.h */,
+				2F5C3FFD16BD848E009CD76D /* Stations.m */,
 			);
 			path = BixiBike;
 			sourceTree = "<group>";
@@ -246,6 +251,7 @@
 				2F281E0816BCB0460004B937 /* Station.m in Sources */,
 				2F281E0D16BCBEA70004B937 /* Annotation.m in Sources */,
 				2F5C3FE716BD06F4009CD76D /* ListViewController.m in Sources */,
+				2F5C3FFE16BD848E009CD76D /* Stations.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

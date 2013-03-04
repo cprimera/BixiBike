@@ -10,7 +10,7 @@
 #import "AppDelegate.h"
 #import "MapViewController.h"
 
-@interface ListViewController : UITableViewController <UITableViewDataSource, UITableViewDelegate, CLLocationManagerDelegate, UISplitViewControllerDelegate>
+@interface ListViewController : UITableViewController <UITableViewDataSource, UITableViewDelegate, CLLocationManagerDelegate, UISplitViewControllerDelegate, MKMapViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) UIViewController *detailViewController;

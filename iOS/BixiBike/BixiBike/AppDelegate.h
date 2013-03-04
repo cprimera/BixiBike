@@ -9,12 +9,13 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import "Station.h"
+#import "Stations.h"
 #import "ListViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, NSXMLParserDelegate, UISplitViewControllerDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) NSMutableArray *stations;
+@property (strong, nonatomic) Stations *stations;
 
 -(void)updateData:(UIRefreshControl *)refresh;
 

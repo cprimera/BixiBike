@@ -50,10 +50,21 @@ NSString *currentElement;
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
-    NSXMLParser *parser = [[NSXMLParser alloc] initWithContentsOfURL:[NSURL URLWithString:@"https://toronto.bixi.com/data/bikeStations.xml"]];
-    parser.delegate = self;
-    _stations = [[NSMutableArray alloc] init];
-    [parser parse];
+    _stations = [[Stations alloc] init];
+    
+//    NSXMLParser *parser = [[NSXMLParser alloc] initWithContentsOfURL:[NSURL URLWithString:@"https://toronto.bixi.com/data/bikeStations.xml"]];
+//    parser.delegate = self;
+//    _stations = [[NSMutableArray alloc] init];
+//    [parser parse];
+    
+    if (_stations == Nil) {
+        _stations = [[Stations alloc] init];
+    } else {
+        if (_stations.updating == NO) {
+            [_stations requestUpdate];
+        }
+    }
+    
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -80,7 +91,7 @@ NSString *currentElement;
 
 -(void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
     if ([elementName isEqualToString:@"station"]) {
-        [_stations addObject:currentStation];
+        //[_stations addObject:currentStation];
     } else if ([elementName isEqualToString:@"name"]) {
         [currentStation setName:currentElement];
         currentElement = nil;
