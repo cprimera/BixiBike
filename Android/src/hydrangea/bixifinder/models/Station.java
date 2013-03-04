@@ -1,6 +1,6 @@
 package hydrangea.bixifinder.models;
 
-public class Station {
+public class Station implements Comparable{
 
 	private String mStationName;
 	private int mBikes;
@@ -11,6 +11,7 @@ public class Station {
 	private boolean mLocked;
 	private double mLat;
 	private double mLong;
+	private double mDistanceToUser;
 	
 	public Station(String name, int bikes, int docks, double lat, double lng, int id) {
 		this.mStationName = name;
@@ -43,5 +44,23 @@ public class Station {
 	
 	public double getLng() {
 		return mLong;
+	}
+	
+	public double getDist() {
+		return mDistanceToUser;
+	}
+	
+	public void setDist(double dist) {
+		this.mDistanceToUser = dist;
+	}
+
+	@Override
+	public int compareTo(Object other) {
+		Station s = (Station) other;
+		
+		if(s.getDist() == this.getDist()) return 0;
+		if(s.getDist() < this.getDist()) return 1;
+		
+		return -1;
 	}
 }

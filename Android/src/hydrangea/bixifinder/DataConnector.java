@@ -1,6 +1,7 @@
 package hydrangea.bixifinder;
 
 import hydrangea.bixifinder.models.Station;
+import java.util.Collections;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.util.Log;
 
 public class DataConnector {
@@ -36,17 +41,45 @@ public class DataConnector {
 		return mStations;
 	}
 
-	public void downloadStations() {
+	public void downloadStations(Activity activity) {
+
+		// Center the map around user's last known location
+		LocationManager locationManager = (LocationManager) activity
+				.getSystemService(Context.LOCATION_SERVICE);
+
+		// We just need the rough location, don't need an accurate location
+		String locationProvider = LocationManager.NETWORK_PROVIDER;
+
+		// Finding the location takes time, last known location would be
+		// sufficient for our needs
+		Location lastKnownLocation = locationManager
+				.getLastKnownLocation(locationProvider);
 
 		Parser p = new Parser();
+		ArrayList<Station> list = null;
 		try {
-			ArrayList<Station> list = p.parse(downloadUrl(url));
+			list = p.parse(downloadUrl(url));
 			for (Station s : list) {
-				mStations.add(s);
+				Location loc = new Location("");
+				loc.setLatitude(s.getLat());
+				loc.setLongitude(s.getLng());
+
+				double dist = loc.distanceTo(lastKnownLocation);
+				s.setDist(dist);
+
 			}
 		} catch (Exception e) {
 
 		}
+
+		if (list != null) {
+			Collections.sort(list);
+
+			for (Station s : list) {
+				mStations.add(s);
+			}
+		}
+
 	}
 
 	private InputStream downloadUrl(String myurl) throws IOException {
@@ -68,17 +101,17 @@ public class DataConnector {
 			Log.d("DEBUG_TAG", "The response is: " + response);
 			is = conn.getInputStream();
 			return is;
-//			String str = readIt(is, len);
-//			
-//			Log.d("HUGE ASS STRING", str);
-//
-//			return str;
+			// String str = readIt(is, len);
+			//
+			// Log.d("HUGE ASS STRING", str);
+			//
+			// return str;
 
 			// Makes sure that the InputStream is closed after the app is
 			// finished using it.
 		} finally {
 			if (is != null) {
-				//is.close();
+				// is.close();
 			}
 		}
 	}
