@@ -16,7 +16,7 @@ import java.util.Collections;
 
 public class DataConnector {
 
-    private static final String LOG_TAG = "BIXI_FINDER";
+    private static final String LOG_TAG = "DataConnector";
 
 	private static DataConnector sInstance;
 	private static final String url = "https://toronto.bixi.com/data/bikeStations.xml";
